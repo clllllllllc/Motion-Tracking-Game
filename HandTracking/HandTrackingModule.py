@@ -47,12 +47,13 @@ class HandDetector:
                     self.mpDraw.draw_landmarks(img, handLms, self.mpHands.HAND_CONNECTIONS)
         return img
 
-    def find_position(self, img: np.ndarray, hand_no: int = 0, draw: bool = False) -> list:
+    def find_position(self, img: np.ndarray, hand_no: int = 0, draw: bool = False, raw: bool = True) -> list:
         """
         find the positions of the hand
         Input: img, np.ndarray, an array containing the image
                hand_no, int, the index of the hand that you want the position of
                draw, boolean, draw or not draw the locations
+               raw, boolean, output raw value or not
         Output: lm_list, array, an 2d array with all the index of the points and the location fo the point
         """
         lm_list = []
@@ -60,11 +61,15 @@ class HandDetector:
             my_hand = self.results.multi_hand_landmarks[hand_no]
             for index, lm in enumerate(my_hand.landmark):
                 # print(id, lm)
-                h, w, c = img.shape
-                cx, cy = int(lm.x * w), int(lm.y * h)
-                lm_list.append([index, cx, cy, lm.z])
-                if draw:
-                    cv2.circle(img, (cx, cy), 25, (255, 0, 255), cv2.FILLED)
+
+                if raw:
+                    lm_list.append([index, lm.x, lm.y, lm.z])
+                else:
+                    h, w, c = img.shape
+                    cx, cy = int(lm.x * w), int(lm.y * h)
+                    lm_list.append([index, cx, cy, lm.z])
+                    if draw:
+                        cv2.circle(img, (cx, cy), 25, (255, 0, 255), cv2.FILLED)
 
         return lm_list
 
