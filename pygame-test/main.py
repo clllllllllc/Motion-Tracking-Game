@@ -4,77 +4,84 @@ import pygame
 
 from HandTracking import HandTrackingModule as htm
 
-pygame.init()
-detector = htm.HandDetector()
 
-SCREEN_WIDTH = 500
-SCREEN_HEIGHT = 500
+def main():
+    pygame.init()
+    detector = htm.HandDetector()
 
-win = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+    SCREEN_WIDTH = 500
+    SCREEN_HEIGHT = 500
 
-pygame.display.set_caption("Game")
+    win = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
-x = 200
-y = 200
-width = 40
-height = 60
-vel = 15
+    pygame.display.set_caption("Game")
 
-p_time = 0
-c_time = 0
-cap = cv2.VideoCapture(0)
+    x = 200
+    y = 200
+    width = 40
+    height = 60
+    vel = 15
 
-run = True
+    p_time = 0
+    c_time = 0
+    cap = cv2.VideoCapture(0)
 
-while run:
-    success, img = cap.read()
-    img = detector.find_hands(img)
-    lm_list = detector.find_position(img, draw=True, raw=True)
-    if lm_list:
-        velocity_vector_start = np.array([lm_list[0][1], lm_list[0][2]])
-        velocity_vector_end = np.array([lm_list[12][1], lm_list[12][2]])
+    run = True
 
-        # h, w, c = img.shape
-        # cx, cy = int(lm_list[4][1] * w), int(lm_list[4][2] * h)
-        # cx2, cy2 = int(lm_list[8][1] * w), int(lm_list[8][2] * h)
-        # cv2.circle(img, (cx, cy), 25, (255, 0, 255), cv2.FILLED)
-        # cv2.circle(img, (cx2, cy2), 25, (255, 0, 255), cv2.FILLED)
+    while run:
+        success, img = cap.read()
+        img = detector.find_hands(img)
+        detector.find_hands(img, draw=True)
+        lm_list = detector.find_position(img, draw=True, raw=True)
+        if lm_list:
+            velocity_vector_start = np.array([lm_list[0][1], lm_list[0][2]])
+            velocity_vector_end = np.array([lm_list[12][1], lm_list[12][2]])
 
-        delta_x = velocity_vector_end[0] - velocity_vector_start[0]
-        delta_y = velocity_vector_end[1] - velocity_vector_start[1]
+            h, w, c = img.shape
+            cx, cy = int(lm_list[0][1] * w), int(lm_list[0][2] * h)
+            cx2, cy2 = int(lm_list[12][1] * w), int(lm_list[12][2] * h)
+            cv2.circle(img, (cx, cy), 25, (255, 0, 255), cv2.FILLED)
+            cv2.circle(img, (cx2, cy2), 25, (255, 0, 255), cv2.FILLED)
 
-        x += -vel * delta_x
-        y += vel * delta_y
+            delta_x = velocity_vector_end[0] - velocity_vector_start[0]
+            delta_y = velocity_vector_end[1] - velocity_vector_start[1]
 
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            run = False
+            x += -vel * delta_x
+            y += vel * delta_y
 
-    keys = pygame.key.get_pressed()
-    if keys[pygame.K_LEFT]:
-        x -= vel
-    if keys[pygame.K_RIGHT]:
-        x += vel
-    if keys[pygame.K_UP]:
-        y -= vel
-    if keys[pygame.K_DOWN]:
-        y += vel
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
 
-    if x < 0:
-        x += 15
-    elif x > SCREEN_WIDTH - width:
-        x -= 15
-    if y < 0:
-        y += 15
-    elif y > SCREEN_HEIGHT - height:
-        y -= 15
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_LEFT]:
+            x -= vel
+        if keys[pygame.K_RIGHT]:
+            x += vel
+        if keys[pygame.K_UP]:
+            y -= vel
+        if keys[pygame.K_DOWN]:
+            y += vel
 
-    win.fill((0, 0, 0))
+        if x < 0:
+            x += 15
+        elif x > SCREEN_WIDTH - width:
+            x -= 15
+        if y < 0:
+            y += 15
+        elif y > SCREEN_HEIGHT - height:
+            y -= 15
 
-    pygame.draw.rect(win, (255, 0, 0), (x, y, width, height))
-    pygame.display.update()
+        win.fill((0, 0, 0))
 
-    # cv2.imshow("Image", img)
-    # cv2.waitKey(1)
+        pygame.draw.rect(win, (255, 0, 0), (x, y, width, height))
+        pygame.display.update()
 
-pygame.quit()
+        cv2.imshow("Image", img)
+        cv2.waitKey(1)
+
+    pygame.quit()
+
+
+if __name__ == "__main__":
+    main()
