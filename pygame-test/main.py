@@ -1,8 +1,36 @@
 import cv2
 import numpy as np
 import pygame
+import random
 
 from HandTracking import HandTrackingModule as htm
+
+
+class Rock:
+
+    def __init__(self, width, height, x, y, vel):
+        self.width = width
+        self.height = height
+        self.x = x
+        self.y = y
+        self.xs = vel[0] - x
+        self.ys = vel[1] - y
+        self.speed = vel[2]
+
+    def draw(self, win):
+        pygame.draw.rect(win, (255, 0, 255), (self.x, self.y, self.width, self.height))
+
+    def movement(self):
+        self.x += self.xs / self.speed
+        self.y += self.ys / self.speed
+
+
+def gen_pos(min, max, bounds):
+    def_x = random.choice([0, 1])
+    if def_x:
+        return random.randint(min - bounds, min)
+    else:
+        return random.randint(max, max + bounds)
 
 
 def main():
@@ -22,11 +50,13 @@ def main():
     height = 60
     vel = 15
 
-    p_time = 0
-    c_time = 0
+    # p_time = 0
+    # c_time = 0
     cap = cv2.VideoCapture(0)
 
     run = True
+
+    rocks = []
 
     while run:
         success, img = cap.read()
@@ -74,11 +104,27 @@ def main():
 
         win.fill((0, 0, 0))
 
+        if random.choice([i for i in range(30)]) == 6:
+            pos_x = gen_pos(0, 500, 50)
+            pos_y = gen_pos(0, 500, 50)
+            rocks.append(Rock(50.0, 50.0, pos_x, pos_y, [x, y, 30]))
+        if rocks:
+            for i, rock in enumerate(rocks):
+                if rock.x < -100 or rock.x > 600 or rock.y < -100 or rock.y > 600:
+                    rocks.pop(i)
+                    continue
+                if rock.x < x < rock.x + 50 and rock.y < y < rock.y + 50:
+                    run = False
+                if rock.x < x + 40 < rock.x + 50 and rock.y < y + 60 < rock.y + 60:
+                    run = False
+                rock.movement()
+                rock.draw(win)
+
         pygame.draw.rect(win, (255, 0, 0), (x, y, width, height))
         pygame.display.update()
 
-        cv2.imshow("Image", img)
-        cv2.waitKey(1)
+        # cv2.imshow("Image", img)
+        # cv2.waitKey(1)
 
     pygame.quit()
 
