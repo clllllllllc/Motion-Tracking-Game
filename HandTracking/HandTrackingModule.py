@@ -1,7 +1,7 @@
 import cv2
 import mediapipe as mp
-import time
 import numpy as np
+import time
 
 
 class HandDetector:
@@ -73,10 +73,12 @@ class HandDetector:
 
         return lm_list
 
+    def find_distance(self):
+        pass
+
 
 def main():
     """A testing function for the hand detection class, no input or output"""
-
     p_time = 0
     cap = cv2.VideoCapture(0)
     detector = HandDetector()
