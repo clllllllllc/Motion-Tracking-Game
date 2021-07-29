@@ -130,7 +130,8 @@ def main():
         pygame.draw.rect(win, (255, 0, 0), (x, y, width, height))
         pygame.display.update()
 
-        pygame.time.delay(20)
+        if key[0]:
+            pygame.time.delay(20)
 
         # cv2.imshow("Image", img)
         # cv2.waitKey(1)
