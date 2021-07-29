@@ -1,7 +1,9 @@
+import random
+import time
+
 import cv2
 import numpy as np
 import pygame
-import random
 
 from HandTracking import HandTrackingModule as htm
 
@@ -52,32 +54,37 @@ def main():
 
     # p_time = 0
     # c_time = 0
-    cap = cv2.VideoCapture(0)
+    key = [True if input() == "1" else False]
+
+    if not key[0]:
+        cap = cv2.VideoCapture(0)
 
     run = True
-
     rocks = []
 
+    time.sleep(1)
     while run:
-        success, img = cap.read()
-        img = detector.find_hands(img)
-        detector.find_hands(img, draw=True)
-        lm_list = detector.find_position(img, draw=True, raw=True)
-        if lm_list:
-            velocity_vector_start = np.array([lm_list[0][1], lm_list[0][2]])
-            velocity_vector_end = np.array([lm_list[12][1], lm_list[12][2]])
 
-            h, w, c = img.shape
-            cx, cy = int(lm_list[0][1] * w), int(lm_list[0][2] * h)
-            cx2, cy2 = int(lm_list[12][1] * w), int(lm_list[12][2] * h)
-            cv2.circle(img, (cx, cy), 25, (255, 0, 255), cv2.FILLED)
-            cv2.circle(img, (cx2, cy2), 25, (255, 0, 255), cv2.FILLED)
+        if not key[0]:
+            success, img = cap.read()
+            img = detector.find_hands(img)
+            detector.find_hands(img, draw=True)
+            lm_list = detector.find_position(img, draw=True, raw=True)
+            if lm_list:
+                velocity_vector_start = np.array([lm_list[0][1], lm_list[0][2]])
+                velocity_vector_end = np.array([lm_list[12][1], lm_list[12][2]])
 
-            delta_x = velocity_vector_end[0] - velocity_vector_start[0]
-            delta_y = velocity_vector_end[1] - velocity_vector_start[1]
+                h, w, c = img.shape
+                cx, cy = int(lm_list[0][1] * w), int(lm_list[0][2] * h)
+                cx2, cy2 = int(lm_list[12][1] * w), int(lm_list[12][2] * h)
+                cv2.circle(img, (cx, cy), 25, (255, 0, 255), cv2.FILLED)
+                cv2.circle(img, (cx2, cy2), 25, (255, 0, 255), cv2.FILLED)
 
-            x += -vel * delta_x
-            y += vel * delta_y
+                delta_x = velocity_vector_end[0] - velocity_vector_start[0]
+                delta_y = velocity_vector_end[1] - velocity_vector_start[1]
+
+                x += -vel * delta_x
+                y += vel * delta_y
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -122,6 +129,8 @@ def main():
 
         pygame.draw.rect(win, (255, 0, 0), (x, y, width, height))
         pygame.display.update()
+
+        pygame.time.delay(20)
 
         # cv2.imshow("Image", img)
         # cv2.waitKey(1)

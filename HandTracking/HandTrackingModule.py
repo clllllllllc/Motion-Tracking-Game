@@ -1,7 +1,8 @@
+import time
+
 import cv2
 import mediapipe as mp
 import numpy as np
-import time
 
 
 class HandDetector:
@@ -27,7 +28,7 @@ class HandDetector:
 
         self.mpHands = mp.solutions.hands
         self.hands = self.mpHands.Hands(self.mode, self.max_hands, self.detection_con, self.track_con)
-        self.mpDraw = mp.solutions.drawing_utils
+        self.mp_draw = mp.solutions.drawing_utils
 
         self.results = None
 
@@ -44,7 +45,7 @@ class HandDetector:
         if self.results.multi_hand_landmarks:
             for handLms in self.results.multi_hand_landmarks:
                 if draw:
-                    self.mpDraw.draw_landmarks(img, handLms, self.mpHands.HAND_CONNECTIONS)
+                    self.mp_draw.draw_landmarks(img, handLms, self.mpHands.HAND_CONNECTIONS)
         return img
 
     def find_position(self, img: np.ndarray, hand_no: int = 0, draw: bool = False, raw: bool = True) -> list:

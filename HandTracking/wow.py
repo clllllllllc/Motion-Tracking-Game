@@ -1,8 +1,8 @@
-import cv2
-import mediapipe as mp
 import time
+
+import cv2
+
 import HandTrackingModule as htm
-import copy
 
 p_time = 0
 c_time = 0
@@ -32,4 +32,3 @@ while True:
 
     cv2.imshow("Image", img)
     cv2.waitKey(1)
-
